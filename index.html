@@ -9,7 +9,7 @@
 </head>
 <body >
     <section>
-    <nav class="navbar  navbar-expand-lg bg-body-tertiar " style="background-color: #e3f2fd;">
+    <nav class="navbar fixed-top navbar-expand-lg bg-body-tertiar " style="background-color: #e3f2fd;">
   <div class="container-fluid">
     <a class="navbar-brand px-2" href="#">Preetham Paul Chinta</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,15 +18,17 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a class="nav-link active" aria-current="page" href="#contact">Contact</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Resume</a>
+          <a class="nav-link" href="#resume">Resume</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Projects</a>
+          <a class="nav-link" href="#projects">Projects</a>
         </li>
-        
+        <li class="nav-item">
+          <a class="nav-link" href="#posts">Posts</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -50,11 +52,11 @@
 
 <!-- Education -->
 <section>
-  <div class="container-fluid">
-      <div class="row mx-5 mt-5">
+  <div class="container-fluid" id="resume">
+      <div class="row mx-5 mt-5 pb-4 border">
           
 
-              <div class="col-6">
+              <div class="col-6 ">
                   <h5 class="fs-3 py-2">Education</h5>
                   <p class="mb-0">Masters in Computer Science,2023</p>
                   <p class="my-0" style="color: grey;"><small>University Of Texas at Arlington -TX,United States</small></p>
@@ -99,7 +101,7 @@
 
 <!-- Projects -->
 <section>
-  <div class="container-fluid">
+  <div class="container-fluid" id="projects">
     <div class="row mx-5 mt-5">
         <h5 class="fs-3 py-2">Projects</h5>
           
@@ -159,13 +161,22 @@
 
 <!-- posts-->
 <section>
-  <div class="container-fluid">
-      <div class="row mx-5 mt-5">
+  <div class="container-fluid" id="posts">
+      <div class="row mx-5 mt-5 pb-4 border">
           
 
               <div class="col-6">
                   <h5 class="fs-3 mt-3">Posts</h5>
-                  <p class="fs-6">us vero neque!</p>
+                  <div class="card">
+                    <div class="card-header">
+                      Video Games
+                    </div>
+                    <div class="card-body">
+                      <h5 class="card-title">Valorant Best Beginner Agent</h5>
+                      <p class="card-text">Learn which agents are the best to begin you competitive journey in Valorant PVP.</p>
+                      <a href="post.html" class="btn btn-primary">Full Blog here...</a>
+                    </div>
+                  </div>
   
               </div>
           
@@ -175,13 +186,16 @@
 
 <!-- contact-->
 <section>
-  <div class="container-fluid">
-      <div class="row mx-5 mt-5">
+  <div class="container-fluid bg-dark" id="contact">
+      <div class="row mx-5 mt-5 ">
           
 
-              <div class="col-6">
-                  <h5 class="fs-3 mt-3">Contact</h5>
-                  <p class="fs-6">us vero neque!</p>
+              <div class="col-6 text-light  mb-5">
+                  <h5 class="fs-3 mt-3  center">Contact</h5>
+                <p class="mb-0">Email</p>
+                <p class="my-0" style="color: grey;">pxc6866@mavs.uta.edu</p>
+                <p class="mb-0">LinkedIn</p>
+                <p class="my-0" style="color: grey;"><a href="https://www.linkedin.com/in/preetham-paul-2837411a6/" target="_blank">Preetham Paul Chinta</a></p>
   
               </div>
           
