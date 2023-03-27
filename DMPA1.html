@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <link rel="icon" type="image/x-icon" href="images/main/ecology.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+
+</head>
+<body>
+    <section>
+        <nav class="navbar  navbar-expand-lg bg-body-tertiar " style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <img src="images/main/ecology.png" alt="pro" width="40px">
+        <a class="navbar-brand px-2" href="index.html">Preetham Paul Chinta</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#edu">Resume</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#projects">Projects</a>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+<!-- About the Project-->
+        </section>
+
+        <div class="container mx-auto text-justify">
+        <section  >
+
+
+        
+            <div class="container-fluid " >
+                <div class="row mx-5 ">
+                    
+        
+                        <div class="col-12  py-2">
+                            <h1 class=" mt-3" id="title">Deep Learning Tutorial to detect Emotions</h1> <a href="otherfiles/pxc6866_dmpa1.ipynb" download>Download</a>
+                            <h5 class="fs-3 mt-3">Objective</h5>
+
+                            <p class="fs-6">
+                                In this ML Tutorial, we will build a deep learning classifier to classify 7 basic expression of humans with the help of 
+                                <a href="https://www.kaggle.com/datasets/samaneheslamifar/facial-emotion-expressions" target="_blank">dataset</a>.
+                                We will cover everything from scratch from importing dataset to tuning hyperparameters.
+                            </p>
+                        </div>
+                       
+                    
+                </div>
+
+            <!-- section contents -->
+
+            <div class="row mx-5 ">
+                    
+        
+                <div class="col-12  py-2">
+                    <h5 class="fs-3 mt-3">Contents</h5>
+
+                    <p class="fs-6">
+                        To build a classifier we need to follow these steps addressed below:
+                    </p>
+                    <ul>
+                        <li>Prepare the Dataset</li>
+                        <li>Model architecture</li>
+                        <li>Loss function and optimization</li>
+                        <li>Training</li>
+                        <li>Evaluation</li>
+                        <li>Improving your model accuracy</li>
+                        <li>Implementation</li>
+                    </ul>
+                </div>
+               
+            
+        </div>
+
+ <!-- section contents ends-->
+
+
+   <!-- section Dataset -->
+
+   <div class="row mx-5 ">
+                    
+        
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3" id="data">Preparing our dataset</h5>
+
+        <p class="fs-6">
+            Since we are using google collab and our dataset is in kaggle, here is the best way to setup your dataset to avoid large downloading and uploading time.
+        </p>
+         <ul>
+            <li>
+                Mount google collab to your drive(make sure you have available space in your drive).
+            </li>
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    from google.colab import drive <br>
+                    drive.mount('/content/drive')
+                  </code>
+              </div>
+            <li>create your kaggle account, navigate to my account and scroll to kaggle api key.</li>
+            <img class='py-1' src="images/post_CNN/api_acc.png" style="display: block;margin-left: auto;margin-right: auto;width: 80%;" alt="picture of kaggle account">
+            <li> Download kaggle api json file, create a folder named kaggle in drive and upload it in the folder.</li>
+            <img class='py-1' src="images/post_CNN/kaggle_json.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="kaggle_drive">
+            <li>Run these commands in your to set enviromental variable and change directory</li>
+            
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    import os <br>
+                    os.environ['KAGGLE_CONFIG_DIR']='/content/drive/MyDrive/Kaggle/' <br>
+                    %cd '/content/drive/MyDrive/Kaggle/' <br>
+                  </code>
+              </div>
+           
+
+            <li>Now go to your favorite dataset url in kaggle, click on the three dots on the right and select api download command</li>
+            <img class='py-1' src="images/post_CNN/api_kaggle_command.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="kaggle_command">
+            <li>Run the command to download the dataset in your drive throught collab and then unzip using the below command</li>
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    !kaggle datasets download -d samaneheslamifar/facial-emotion-expressions <br>
+                    !unzip \*.zip && rm *.zip <br>
+                  </code>
+              </div>
+
+            
+            <li>Now you have folder paths of the dataset to your drive from collab.</li>
+         </ul>
+
+         <p>Now that we have the dataset ready, we have to generate a dataloader for our model.
+            We should understand that we also need to compose our tranform function to do operations on our data 
+            to help our model extract features from the images as much as possible.
+         </p>
+         <div class="bg-light p-5">
+            <code class="text-muted">
+                t=transforms.Compose([ <br>
+                transforms.RandomRotation(10), <br>
+                transforms.ToTensor()]) <br>
+
+              </code>
+          </div>
+         
+
+         <p> There are a number of tranform operations we can do in order to draw out maximum features.
+            We will use these tranform operations today. Here are more <a href="https://pytorch.org/vision/stable/transforms.html" target="_blank">tranform operations</a> that you can experiment.
+            With the help of tranforms our data will be changed according to the composed transform variable.
+            Now we can create a dataloader for both train and validation with the help of torchvison.datasets.ImageFolder class.
+         </p>
+         <div class="bg-light p-5">
+            <code class="text-muted">
+                batch_size=64 <br>
+                trainloader=torch.utils.data.DataLoader(train_dataset,batch_size=batch_size,shuffle=True) <br>
+                testloader=torch.utils.data.DataLoader(validation_dataset,batch_size=batch_size,shuffle=True) <br>
+
+              </code>
+          </div>
+        
+    </div>
+
+    <p>I've written my own functions to display images in a grid to see how they look before and after tranformations.</p>
+    <div class="bg-light p-5">
+        <code class="text-muted">
+            def random4(dataset): <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;return [dataset[np.random.randint(len(dataset))] for x in range(4)]<br>
+          def display(image,label,classes):<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.figure(figsize=(9,9))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.subplot(1,4,1)<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.imshow(image[0].permute(1, 2, 0))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.title(classes[label[0]])<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.subplot(1,4,2)<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.imshow(image[1].permute(1, 2, 0))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.title(classes[label[1]])<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.subplot(1,4,3)<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.imshow(image[2].permute(1, 2, 0))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.title(classes[label[2]])<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.subplot(1,4,4)<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.imshow(image[3].permute(1, 2, 0))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;plt.title(classes[label[3]])<br>
+          def lossgraph(list_loss):<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;if isinstance(list_loss,tuple):<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; for i in list_loss:<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; x=range(len(i))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; y=i<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; plt.plot(x,y,marker ='.')<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; plt.legend(["train loss", "test loss"])<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;else:<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x=range(len(list_loss))<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;y=list_loss<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;plt.plot(x,y,marker ='.')<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;plt.show()<br>
+
+          </code>
+      </div>
+      <img src="images/post_CNN/image_grid.png" style="display: block;margin-left: auto;margin-right: auto;width: 40%;" alt="lossgraph">
+            
+</div>
+
+<!-- section Dataset ends-->
+      </section>
+      
+<!-- section Model starts-->
+   <section>
+            <div class="row mx-5 ">
+                    
+        
+            <div class="col-12  py-2">
+                <h5 class="fs-3 mt-3" id="model">Model Architecture</h5>
+
+                <p class="fs-6">
+                    Creating your own model is easy.It depends on what your inputs and outputs are.
+                    Since we are trying to create a model which takes an image as an input of size 48x48x3 to classify the image into 7 classes
+                    ,we are halfway done creating our model. We can create our own hidden layers (conv2d,maxpool,fully connected) to accept our input to generate only 7 ouputs.
+                    Some formulas are important to calculate how our input size will change after entering next layers so we need to be familiar with this.
+                    <img src="/images/post_CNN/formula_cnn.png" style="display: block;margin-left: auto;margin-right: auto;width: 20%;" alt="formula image with examples">
+                    
+                </p>
+                <p class="fs-6"> 
+                    This is the architecture that I want to experiment on today .I created this CNN graph using <a href="http://alexlenail.me/NN-SVG/LeNet.html" target="_blank">NNSVG tool</a>.
+                    <img class='py-3' src="images/post_CNN/cnnarch.png" style="display: block;margin-left: auto;margin-right: auto;width: 80%;" alt="cnn_arc">
+                    <div class="bg-light p-5">
+                        <code class="text-muted">
+                            #implementation of architecture in pytorch <br>
+                            import torch.nn as nn <br>
+                            import torch.nn.functional as F<br>
+                            
+                            #network architecture<br>
+                            
+                            class Net(nn.Module):<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;def __init__(self):<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;super().__init__()<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv1 = nn.Conv2d(3, 32, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv2 = nn.Conv2d(32, 32, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.pool = nn.MaxPool2d(2, 2)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv3 = nn.Conv2d(32, 24, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv4 = nn.Conv2d(24, 24, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv5 = nn.Conv2d(24, 128, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.conv6 = nn.Conv2d(128, 128, 3)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.fc1 = nn.Linear(128,64)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.fc2 = nn.Linear(64, 64)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.fc3 = nn.Linear(64, 7)<br>
+                            
+                            &emsp;&emsp;&emsp;&emsp;&emsp;def forward(self, x):<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x =F.relu(self.conv1(x)) <br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.pool(self.conv2(x)))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x =F.relu(self.conv3(x)) <br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.pool(self.conv4(x)))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.pool(self.conv5(x)))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.conv6(x))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = torch.flatten(x, 1) <br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.fc1(x))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = F.relu(self.fc2(x))<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x = self.fc3(x)<br>
+                             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return x <br>
+                            
+                            
+                            net = Net()
+            
+                          </code>
+                      </div>
+                </p>
+            </div>
+    </div>
+
+<!-- section Model ends-->
+
+<!-- section Loss starts-->
+
+    <div class="row mx-5 ">
+                
+    
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3" id="loss">Loss function and Optimizer</h5>
+
+            <p class="fs-6">
+                Our model and data are ready now we have to train our model to classify into 7 outputs.
+                But the question is, how should we adjust the weights/parameters of our model?
+                We need to select a good loss function to measure the magnitude of similarity and also a good Optimizer
+                to change our parameters so we get closer to our convergence point quickly.
+                <br>
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        import torch.optim as optim <br>
+                        criterion = nn.CrossEntropyLoss() <br>
+                        optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9) <br>
+        
+                      </code>
+                  </div>
+                 
+                
+            </p>
+            <p class="fs-6"> 
+                I've used Cross Entropy Loss for loss function and 
+                Stoichoistic Gradient descent for optimizer.
+                <br>
+    
+                <img src="/images/post_CNN/cross-entropy.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="Cross Entropy and SGD formulars">
+                <img src="/images/post_CNN/sgd.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="Cross Entropy and SGD formulars">
+        
+            </p>
+        </div>
+</div>
+
+<!-- section Loss ends-->
+
+
+<!-- section Training starts-->
+
+    <div class="row mx-5 ">
+                
+    
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3">Model Training</h5>
+
+            <p class="fs-6">
+                Now that we have all the ingredients we need, we have to train our <a href="DMPA1.html#data">data</a> in our designed <a href="DMPA1.html#model">network</a>
+                which will <a href="DMPA1.html#loss">adjust</a> our parameters with the calculated <a href="DMPA1.html#loss">loss</a> for some epochs as we calculate 
+                training and validation loss.
+                <br>
+
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                train_loss_epoch=[] <br>
+                test_loss_epoch=[]<br>
+                epochs=30<br>
+                for epoch in range(epochs):  #no. of epochs<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;running_loss = 0.0<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;for i, data in enumerate(trainloader, 0):<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;inputs, labels = data<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;optimizer.zero_grad()<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outputs = net(inputs)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loss = criterion(outputs, labels)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loss.backward()<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;optimizer.step()<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;running_loss += loss.item()<br>
+                        
+                &emsp;&emsp;&emsp;&emsp;&emsp;train_loss=running_loss / len(trainloader)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;train_loss_epoch.append(train_loss)<br>
+                
+                &emsp;&emsp;&emsp;&emsp;&emsp;running_loss = 0.0<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;for i, data in enumerate(testloader, 0):<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;inputs, labels = data<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outputs = net(inputs)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loss = criterion(outputs, labels)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;running_loss += loss.item()<br>
+                    
+                &emsp;&emsp;&emsp;&emsp;&emsp;test_loss = running_loss / len(testloader)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;test_loss_epoch.append(test_loss)<br>
+                
+                &emsp;&emsp;&emsp;&emsp;&emsp;print(f'epoch {epoch+1} train loss: {train_loss:.6f} test loss: {test_loss:.6f} ')<br>
+                
+                            
+                print('Finished Training')<br>
+
+                output: <br>
+                >> <br>
+                epoch 1 train loss: 1.896517 test loss: 1.857061 <br>
+                epoch 2 train loss: 1.843713 test loss: 1.830064 <br>
+                epoch 3 train loss: 1.827166 test loss: 1.820000 <br>
+                epoch 4 train loss: 1.819676 test loss: 1.814978 <br>
+                epoch 5 train loss: 1.815940 test loss: 1.812773 <br>
+                epoch 6 train loss: 1.813784 test loss: 1.811236 <br>
+                epoch 7 train loss: 1.812598 test loss: 1.810101 <br>
+                epoch 8 train loss: 1.811762 test loss: 1.809623 <br>
+                epoch 9 train loss: 1.811533 test loss: 1.809236 <br>
+                epoch 10 train loss: 1.811051 test loss: 1.808465 <br>
+                epoch 11 train loss: 1.811027 test loss: 1.808569 <br>
+                epoch 12 train loss: 1.810892 test loss: 1.809753 <br>
+                epoch 13 train loss: 1.810893 test loss: 1.809554 <br>
+                epoch 14 train loss: 1.810782 test loss: 1.809768 <br>
+                epoch 15 train loss: 1.810815 test loss: 1.808367 <br>
+                epoch 16 train loss: 1.810809 test loss: 1.808287 <br>
+                epoch 17 train loss: 1.810868 test loss: 1.809150 <br>
+                epoch 18 train loss: 1.810919 test loss: 1.808391 <br>
+                epoch 19 train loss: 1.810639 test loss: 1.808810 <br>
+                epoch 20 train loss: 1.810725 test loss: 1.809094 <br>
+                epoch 21 train loss: 1.811118 test loss: 1.809486 <br>
+                epoch 22 train loss: 1.811025 test loss: 1.809269 <br>
+                epoch 23 train loss: 1.810810 test loss: 1.809308 <br>
+                epoch 24 train loss: 1.810779 test loss: 1.808518 <br>
+                epoch 25 train loss: 1.810824 test loss: 1.809349 <br>
+                epoch 26 train loss: 1.810761 test loss: 1.809033 <br>
+                epoch 27 train loss: 1.810808 test loss: 1.808755 <br>
+                epoch 28 train loss: 1.810809 test loss: 1.809389 <br>
+                epoch 29 train loss: 1.810779 test loss: 1.808482 <br>
+                epoch 30 train loss: 1.810596 test loss: 1.809356 <br>
+                Finished Training
+
+                </code>
+                </div>
+
+
+            </p>
+            <p class="fs-6"> 
+                We specify the number of epochs and iterate through each data batch from the loader of trainset.
+                We calculate the net of the given batch, then calculate loss with the help of our CrossEntropy.NN to <adjust>
+                optimize the parameters of our model.
+                Then we calculate the test loss but we dont adjust our parameters now.
+                We then create a graph using our lossgraph method we created to show how our training and test loss 
+                are effected over the number of epochs.
+                <img src="images/post_CNN/trainvstestloss.png" style="display: block;margin-left: auto;margin-right: auto;width: 50%;" alt="lossgraph">
+               
+            </p>
+
+            <p>From the graph we can say that our model is performing good if</p>
+            <ul>
+                <li>Our train and test loss converge after certain epochs.</li>
+                <li>Gradual decrease in loss i.e; no spikes</li>
+                <li>If test loss doesnt increase after certain epochs(Overfitting)</li>
+            </ul>
+        </div>
+</div>
+
+
+
+<!-- section Training ends-->
+
+
+
+
+
+
+<!-- section Contribution starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Evaluation/Contribution</h5>
+
+        <p class="fs-6">
+           I designed the entire network on my own. Experimenting on different networks/different hyperparameters I ended up with this model by the end of submission data.
+           Other networks that I designed were not able to extract as much features. Here is one of the network which didnt perform well.
+
+            <br>
+            <img src="images/post_CNN/arch1.png" style="display: block;margin-left: auto;margin-right: auto;width: 40%;" alt="lossgraph">
+            <img src="images/post_CNN/arch1_out.png" style="display: block;margin-left: auto;margin-right: auto;width: 40%;" alt="lossgraph">
+            
+            Then I experimented more by changing network topology and ended up with the mode which gives 25.83 % accuracy.
+
+
+        </p>
+        <div class="bg-light p-5">
+            <code class="text-muted">
+                test_correct = 0.0 <br>
+                test_total = 0.0<br>
+                with torch.no_grad():<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;for inputs, labels in testloader:<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outputs = net(inputs)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_, predicted = torch.max(outputs, 1)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;test_total += labels.size(0)<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;test_correct += (predicted == labels).sum().item()<br>
+
+                test_accuracy = 100.0 * test_correct / test_total<br>
+                print('Test Accuracy: {test_accuracy:.2f}')<br>
+                Output: <br>
+                >> Test Accuracy: 25.83 <br>
+              </code>
+          </div>
+        
+    </div>
+</div>
+<!-- section Contribution end-->
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Technical challenges</h5>
+
+        <p class="fs-6">
+            Some of the technical challenges I faced during the project:
+            <ul>
+                <li>Dataloader slowed down in google collab to 4 images per second
+                    <p> To tackle this situation we need to clear cache of google collab by using the below code , it collect all the garbage values and clears the cache.</p>
+                    <div class="bg-light p-5">
+                        <code class="text-muted">
+                            import gc <br>
+                            gc.collect() <br>
+                            torch.cuda.empty_cache() <br>
+                          </code>
+                      </div>
+                    
+                </li>
+                <li>Preparing dataset, Downloading and uploading dataset to the drive explicilty was quite a hassle,but using the <a href="DMPA1.html#data">method</a> I mentioned above we dont need to download anything to our local system.</li>
+            </ul>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Related links</h5>
+
+        <p class="fs-6">
+            All my code is derived from this basic tutorial published by pytorch.
+           <a href="https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html"> Pytorch tutorial</a>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+</section>
+
+</div>
+
+        
+
+
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+</html>
