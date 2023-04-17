@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Classifier</title>
+    <link rel="icon" type="image/x-icon" href="images/main/ecology.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+
+</head>
+<body>
+    <section>
+        <nav class="navbar  navbar-expand-lg bg-body-tertiar " style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <img src="images/main/ecology.png" alt="pro" width="40px">
+        <a class="navbar-brand px-2" href="index.html">Preetham Paul Chinta</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#edu">Resume</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#projects">Projects</a>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+<!-- About the Project-->
+        </section>
+
+        <div class="container mx-auto text-justify">
+        <section  >
+
+
+        
+            <div class="container-fluid " >
+                <div class="row mx-5 ">
+                    
+        
+                        <div class="col-12  py-2">
+                            <h1 class=" mt-3" id="title">Naive Bayes classifier for movie reviews</h1> <a href="otherfiles/pxc6866_dmpa2.ipynb" download>Download</a>
+                            <h5 class="fs-3 mt-3">Objective</h5>
+
+                            <p class="fs-6">
+                                In this ML Tutorial, we will build a Naive Bayes classifier to classify movie reviews into fresh or rotten.
+                                <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/rotten-tomatoes-reviews" target="_blank">dataset</a>.
+                                We will cover everything from scratch from preprocessing to building model and predicting.
+                            </p>
+                        </div>
+                       
+                    
+                </div>
+
+            <!-- section contents -->
+
+            <div class="row mx-5 ">
+                    
+        
+                <div class="col-12  py-2">
+                    <h5 class="fs-3 mt-3">Contents</h5>
+
+                    <p class="fs-6">
+                        To build a Naive Bayes classifier we need to follow these steps addressed below:
+                    </p>
+                    <ul>
+                        <li>Prepare the Dataset</li>
+                        <li>Preprocessing the data set</li>
+                        <li>Building Naive Bayes model</li>
+                        <li>Evaluation/Prediction</li>
+                        <li>Effect of Smoothing</li>
+                        <li>Top 10 words that predict each class</li>
+                        <li>Technical challenges</li>
+                    </ul>
+                </div>
+               
+            
+        </div>
+
+ <!-- section contents ends-->
+
+
+   <!-- section Dataset -->
+
+   <div class="row mx-5 ">
+                    
+        
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3" id="data">Preparing the dataset</h5>
+        <p class="fs-6">
+            We can use google collab or jupyter notebook to build this classifier. Today we are going to build it in our local machine, so we download the data set
+            and place our dataset .csv file in our directory and open it with file handling in python.
+        </p>
+         <ul>
+            <li>
+                Firstly, we are going to seperate the rating and review index wise to 2 lists and then creating a dataframe from it.
+                Since the csv file has a lot of text in it, it was not possible to use pd.read_csv("rt_reviews.csv") as it had many commas in it and the function was not
+                able to seperate it properly. I build a small algorithm to seperate reviews and rating and then created a dataframe out of it.
+            </li>
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    review=[] <br>
+                    rating=[]<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;with open('rt_reviews.csv', 'r', encoding='iso-8859-1') as file:<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for ind,line in enumerate(file):<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if ind!=0:<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rat=line.split(',')[0]<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rating.append(rat)<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if rat=='fresh':<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;review.append(line[6:]) #start from 5+',' letter<br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;else: <br>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;review.append(line[7:])#start from 6+',' letter<br>
+                    df=pd.DataFrame(data) <br>
+                    df.head() <br>
+                </code>
+                <img class='py-1' src="images/post_NB/df_head.png" style="display: block;margin-left: auto;margin-right: auto;width: 40%;" alt="picture of kaggle account">
+              </div>
+            <li>Now, we split the data into train,validation and test set for us to train, tuning the parameters and testing our model.
+                Below is the code for the split from scratch.
+            </li>
+            <div class="bg-light p-5">
+            <code class="text-muted">
+                ratio_tuple=(70,15,15) <br>
+                def split(data,ratio_tuple):<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;shuffled_df = df.sample(frac=1)#shuffling dataset<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;split_data=[] #index 0 training, index 1 tesing, index 2 development<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;for i in ratio_tuple:<br>
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;split_data.append(shuffled[:int((shuffled.shape[0]*i)/100),:])<br>
+            </code>
+        </div>
+           
+         </ul>
+
+         
+    </div>  
+</div>
+
+<!-- section Dataset ends-->
+      </section>
+      
+<!-- section Model starts-->
+   <section>
+            <div class="row mx-5 ">
+                    
+        
+            <div class="col-12  py-2">
+                <h5 class="fs-3 mt-3" id="model">Data Preprocessing</h5>
+
+                <p class="fs-6">
+                    Before creating the model, we need to preprocess the data i.e, cleaning the data so we can tokenize the reviews into unique words
+                    which do not have duplicates and special symbols which might affect the accuracy and predictions of the model.
+                    Not only we clean the data but also arrange it in desired datastructure to work on it with ease to build a model on it.
+                    Below I created 2 algorithms for preprocessing, one which removes all symbols in the reviews, another one to remove rare words which
+                    might affect our models accuraacy.
+                    
+                    <div class="bg-light p-5">
+                        <code class="text-muted">
+                            #removes all symbols in the statements/review <br>
+                            def remove_symbols(review,symbols=['\n','\t',':','"','.','[',']','?',')','(',',','-','$']):<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;for i in symbols:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;review=review.replace(i,' ')<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;return review<br>
+                            #removes rare words less than 5 apperances<br>
+                            def remove_rare(dic):<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;rare_words=[]<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;for word in dic: <br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if dic[word]<6:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rare_words.append(word)<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for rare in rare_words:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;dic.pop(rare)<br>
+            
+                          </code>
+                      </div>
+                      We choose a reverse dictionary to build a 'bag of words' which will keep track of the number of times the word appeared in the document. 
+
+
+                      <div class="bg-light p-5">
+                        <code class="text-muted">
+                            #creates bag of words dictionary for a given reviews/statements    <br>
+                            def boggor(reviews):<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;dict_bow=dict() <br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;syms=['\n','\t',':','"','.','[',']','?',')','(',',','-']<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;for review in reviews:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x=remove_symbols(review.lower())<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x=x.split(" ")<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;processed_words=[i for i in x if i.strip()]<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for word in processed_words:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if word in dict_bow:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;dict_bow[word]+=1<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;else:<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;dict_bow[word]=1<br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;return dict_bow<br>
+            
+                          </code>
+                      </div>
+
+                </p>
+            
+            </div>
+    </div>
+
+<!-- section preprocess ends-->
+
+<!-- section Loss starts-->
+
+    <div class="row mx-5 ">
+                
+    
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3" id="loss">Building Naive Bayes Model</h5>
+
+            <p class="fs-6">
+                To build Naive Bayes model, we need all the probabilities to compute P( Hypothesis | Evidence ) in order to classify if our review is fresh or rotten.
+
+                The algorithm goes as follows:
+                <img id='formula' src="/images/post_NB/posterior.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+        
+                <ul>
+                    <li>Compute the prior probabilities of classes (fresh,rotten)</li>
+                    <li>Compute the conditonal probababilities of each word given class P('word'|fresh) , P('word'|rotten) </li>
+                    <li>Compute the Posterior probababiliy which is </li>
+                    <img  src="/images/post_NB/post_form.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="Cross Entropy and SGD formulars">
+                    
+                </ul>
+                We need to compute conditional probabilities of all words in the bag, here is the algorithm which calculates all probababilities in th bag,
+                <br>
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        def fit(df):
+                        &emsp;&emsp;&emsp;&emsp;&emsp;fresh_reviews=df.review[df.rating=='fresh'].to_list() <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;rotten__reviews=df.review[df.rating=='rotten'].to_list()<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;#prior probs<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;fresh_prior,rotten_prior=prior(df)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;#preprocess<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;fresh_dict=boggor(fresh_reviews)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;rotten_dict=boggor(rotten_reviews)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;remove_rare(fresh_dict)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;remove_rare(rotten_dict)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;#conditional probs<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;fresh_probs={}<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;for ind,word in enumerate(fresh_dict):<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;fresh_probs[word]=fresh_dict[word]/len(fresh_reviews)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;rotten_probs={}  <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;for ind,word in enumerate(rotten_dict):<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rotten_probs[word]=rotten_dict[word]/len(rotten_reviews)<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;print("Calculated all parameters : 'priors and likelyhoods'")<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;return (fresh_prior,rotten_prior,fresh_probs,rotten_probs)<br>
+
+                      </code>
+                  </div>
+                 
+                
+            </p>
+          
+        </div>
+</div>
+
+<!-- section Loss ends-->
+
+
+<!-- section Training starts-->
+
+    <div class="row mx-5 ">
+                
+    
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3">Evaluation/Prediction</h5>
+
+            <p class="fs-6">
+                After calculating posterior probabilites from prior and conditional probababilities, now we try to predict given review if its rotten or fresh.
+                In Order to predict, we need to preprocess the given statement first in order to get the calculated probababilities from previous step.
+                <ul>
+                    <li>We get the review, we remove the symbols and convert it to lower case.</li>
+                    <li>Tokenize the words and retrieve calculated conditional probabilies along with prior probabilites.</li>
+                    <li>Use the reverse dictionary "bag of words" to get probabities in the given word and calculate the product of all the P(word|fresh) and P(word|rotten) using given <a href="#formula">formula</a>.
+                    </li>
+                    <li>Compare posterior of both classes, the one with higher value is the predicted class.</li>
+
+                </ul> 
+                We also create a accuracy function from scratch to get our accuracy scrore from predicted and actual values.
+                <br>
+
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        def predict(df,NB,alpha=1): <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;pf,pr,f_probs,r_probs=NB<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;y_pred=[]<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;for ind,review in enumerate(df.review.to_list()):<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x=remove_symbols(review).lower().split(' ') #lower case with no symbols <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x=[i for i in x if i.strip()] #removing '' from list<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x_fresh_probs=np.array([f_probs[i] if i in f_probs else alpha for i in x ])<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;x_rotten_probs=np.array([r_probs[i] if i in r_probs else alpha for i in x ])<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if np.prod(x_fresh_probs)*pf>np.prod(x_rotten_probs)*pr:<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;y_pred.append('fresh')<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;else:<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;y_pred.append('rotten')<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;return y_pred<br>
+
+                        <br>
+                        #calculating accuracy <br>
+                        def accuracy(y_pred,y): <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;matches = sum([1 if yp == ya else 0 for yp, ya in zip(y_pred, y)]) <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;accuracy=matches/len(data) <br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;return accuracy <br>
+                </code>
+                </div>
+                We use all these methods to predict the reviews of development set and calculate the accuracy.
+
+<div class="bg-light p-5">
+                    <code class="text-muted">
+                        #calculate accuracy of development set <br>
+                        <br>
+                        data=dev_df
+                        <br>
+                        alpha=1<br>
+                        model=fit(df)  #fitting on whole dataset<br>
+                        <br>
+                        <br>
+                        pf,pr,f_train,r_train=model<br>
+                        y_pred=predict(data,model,alpha)<br>
+                        y=data.rating.to_list()  <br>
+                        <br>
+                        acc=accuracy(y_pred,y)<br>
+                        print(f'accuracy of the model is {acc:.4f}')<br>
+<br>
+<br>
+                        >>output:<br>
+                        >>Calculated all parameters : 'priors and likelyhoods' <br>
+                        >>accuracy of the model is 0.6356 <br>
+                </code>
+                </div>
+
+            </p>
+        
+        </div>
+</div>
+
+
+
+<!-- section Training ends-->
+
+
+
+
+
+
+<!-- section Contribution starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Effect of smoothing</h5>
+
+        <p class="fs-6">
+           Smoothing is a concept to help our Naive bayes model predict well.
+           Suppose, we have a new review with was never seen by the Naive Bayes method in training, which might contain a word which is just introduced.
+           Words which did not exist at the time of training the model have 0 frequency whose conditional probabilities is also 0, which affects the posteriors of both classes
+           which is a product of all conditionals therefore making our model ineffective.
+           Smoothing is a concept which helps the model to not break by adding a random value (1.0) as the new words conditional.
+           We get the predictions without any problem.
+
+
+            <br>
+            <img src="images/post_NB/smoothing error.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" alt="lossgraph">
+            
+            Here when we predict without alpha we get an error of unknown key.
+
+
+        </p>
+     
+        
+    </div>
+</div>
+<!-- section Contribution end-->
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Top 10 words that predict a class</h5>
+
+        <p class="fs-6">
+            Words with high conditional probability are the words which are the top predictors of a review, below code will get the top 10 fresh predicted and top 10 rotten 
+            predictors.
+          
+                
+                    <p> To tackle this situation we need to clear cache of google collab by using the below code , it collect all the garbage values and clears the cache.</p>
+                    <div class="bg-light p-5">
+                        <code class="text-muted">
+                            #top 10 for fresh <br>
+                            dic=fit(df) <br>
+                            print("Top 10 Fresh") <br>
+                            sorted_items = sorted(dic[2].items(), key=lambda x: x[1], reverse=True) <br>
+                            for i in sorted_items[:10]: <br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;print(i) <br>
+                            print("Top 10 Rotten") <br>
+                            sorted_items = sorted(dic[3].items(), key=lambda x: x[1], reverse=True) <br>
+                            for i in sorted_items[:10]: <br>
+                            &emsp;&emsp;&emsp;&emsp;&emsp;print(i) <br>
+
+                            output:
+                            >>
+                            Top 10 Fresh
+                            ('the', 1.1488291666666666) <br>
+                            ('a', 0.8281375)<br>
+                            ('and', 0.7501625)<br>
+                            ('of', 0.6948708333333333)<br>
+                            ('to', 0.4419958333333333)<br>
+                            ('is', 0.4178625)<br>
+                            ('in', 0.339275)<br>
+                            ('that', 0.2602083333333333)<br>
+                            ('it', 0.25457083333333336)<br>
+                            ('with', 0.20266666666666666)<br>
+                            Top 10 Rotten
+                            ('the', 1.1349875)<br>
+                            ('a', 0.7486041666666666)<br>
+                            ('of', 0.6061291666666667)<br>
+                            ('and', 0.578875)<br>
+                            ('to', 0.5100458333333333)<br>
+                            ('is', 0.37812083333333335)<br>
+                            ('in', 0.3035833333333333)<br>
+                            ('it', 0.26813333333333333)<br>
+                            ('that', 0.2623125)<br>
+                            ('but', 0.20375833333333335)<br>
+                          </code>
+                      </div>
+           
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Technical challenges</h5>
+
+        <p class="fs-6">
+            Some of the technical challenges I faced during the project:
+            <ul>
+                
+                <li>Cannot read_csv files beacause the text had multiple commas and it was difficult for the method to tackle the situation.</li>
+                <li>Multiple values because of single quotes</li>
+            </ul>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Related links</h5>
+
+        <p class="fs-6">
+            Tutorial from the given link helped me understand more about the topic.
+           <a href="https://towardsdatascience.com/naive-bayes-classifier-81d512f50a7c">Naive Bayes Explained</a>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+</section>
+
+</div>
+
+        
+
+
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+</html>
