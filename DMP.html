@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mango Disease Classifier</title>
+    <link rel="icon" type="image/x-icon" href="images/main/ecology.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+
+</head>
+<body>
+    <section>
+        <nav class="navbar  navbar-expand-lg bg-body-tertiar " style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <img src="images/main/ecology.png" alt="pro" width="40px">
+        <a class="navbar-brand px-2" href="index.html">Preetham Paul Chinta</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#edu">Resume</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#projects">Projects</a>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+<!-- About the Project-->
+        </section>
+
+        <div class="container mx-auto text-justify">
+        <section  >
+
+
+        
+            <div class="container-fluid " >
+                <div class="row mx-5 ">
+                    
+        
+                        <div class="col-12  py-2">
+                            <h1 class=" mt-3" id="title">Mango leaf disease classifier using CNN</h1> <a href="otherfiles/DMP.ipynb" download>Download</a>
+                            <h5 class="fs-3 mt-3">Objective</h5>
+
+                            <p class="fs-6">
+                                In this ML Tutorial, we will build a Mango leaf disease classifier to classify images to 8 classes : 'Anthracnose',
+                                'Bacterial Canker',
+                                'Cutting Weevil',
+                                'Die Back',
+                                'Gall Midge',
+                                'Healthy',
+                                'Powdery Mildew',
+                                'Sooty Mould'.
+                                <a href="https://www.kaggle.com/datasets/aryashah2k/mango-leaf-disease-dataset" target="_blank">dataset</a>.
+                                We will cover everything from scratch from preprocessing to building model and predicting.
+                            </p>
+                        </div>
+                       
+                    
+                </div>
+
+            <!-- section contents -->
+
+            <div class="row mx-5 ">
+                    
+        
+                <div class="col-12  py-2">
+                    <h5 class="fs-3 mt-3">Contents</h5>
+
+                    <p class="fs-6">
+                        To build a CNN deep learning classifier we need to follow these steps addressed below:
+                    </p>
+                    <ul>
+                        <li>Prepare the Dataset</li>
+                        <li>Preprocessing the data set</li>
+                        <li>Building CNN models</li>
+                        <li>Evaluation/Prediction</li>
+                        <li>Technical challenges</li>
+                    </ul>
+                </div>
+               
+            
+        </div>
+
+ <!-- section contents ends-->
+
+
+   <!-- section Dataset -->
+
+   <div class="row mx-5 ">
+                    
+        
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3" id="data">Preparing the dataset</h5>
+        <p class="fs-6">
+            Since we are using google collab and our dataset is in kaggle, here is the best way to setup your dataset to avoid large downloading and uploading time.
+        </p>
+         <ul>
+            <li>
+                Mount google collab to your drive(make sure you have available space in your drive).
+            </li>
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    from google.colab import drive <br>
+                    drive.mount('/content/drive')
+                  </code>
+              </div>
+            <li>create your kaggle account, navigate to my account and scroll to kaggle api key.</li>
+            <img class='py-1' src="images/post_CNN/api_acc.png" style="display: block;margin-left: auto;margin-right: auto;width: 80%;" alt="picture of kaggle account">
+            <li> Download kaggle api json file, create a folder named kaggle in drive and upload it in the folder.</li>
+            <img class='py-1' src="images/post_CNN/kaggle_json.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="kaggle_drive">
+            <li>Run these commands in your to set enviromental variable and change directory</li>
+            
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    import os <br>
+                    os.environ['KAGGLE_CONFIG_DIR']='/content/drive/MyDrive/Kaggle/' <br>
+                    %cd '/content/drive/MyDrive/Kaggle/' <br>
+                  </code>
+              </div>
+           
+
+            <li>Now go to your favorite dataset url in kaggle, click on the three dots on the right and select api download command</li>
+            <img class='py-1' src="images/post_CNN/api_kaggle_command.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="kaggle_command">
+            <li>Run the command to download the dataset in your drive throught collab and then unzip using the below command</li>
+            <div class="bg-light p-5">
+                <code class="text-muted">
+                    !kaggle datasets download -d samaneheslamifar/facial-emotion-expressions <br>
+                    !unzip \*.zip && rm *.zip <br>
+                  </code>
+              </div>
+
+            
+            <li>Now you have folder paths of the dataset to your drive from collab.</li>
+         </ul>
+
+         <p>Now that we have the dataset ready, we have to generate a dataloader for our model.
+            We should understand that we also need to compose our tranform function to do operations on our data 
+            to help our model extract features from the images as much as possible. The data path variable is the path to your dataset folder.
+         </p>
+         <div class="bg-light p-5">
+            <code class="text-muted">
+                from tensorflow.keras.preprocessing.image import ImageDataGenerator <br>
+              
+                
+                train_ds = datagen.flow_from_directory(<br>
+                &emsp;&emsp;&emsp;data_path,<br>
+                &emsp;&emsp;&emsp;target_size=(320, 240),<br>
+                &emsp;&emsp;&emsp;batch_size=32,<br>
+                &emsp;&emsp;&emsp;class_mode='categorical',<br>
+                &emsp;&emsp;&emsp;subset='training'<br>
+                )<br>
+                <br>
+                val_ds = datagen.flow_from_directory(<br>
+                &emsp;&emsp;&emsp;data_path,<br>
+                &emsp;&emsp;&emsp;target_size=(320, 240),<br>
+                &emsp;&emsp;&emsp;batch_size=32,<br>
+                &emsp;&emsp;&emsp;class_mode='categorical',<br>
+                &emsp;&emsp;&emsp;subset='validation'<br>
+                )<br>
+                <br>
+                test_ds = datagen.flow_from_directory(<br>
+                &emsp;&emsp;&emsp;data_path,<br>
+                &emsp;&emsp;&emsp;target_size=(320, 240),<br>
+                &emsp;&emsp;&emsp;batch_size=32,<br>
+                &emsp;&emsp;&emsp;class_mode='categorical',<br>
+                )<br>
+                
+        </code>
+        </div>
+
+    </div>  
+</div>
+
+<!-- section Dataset ends-->
+      </section>
+      
+<!-- section Model starts-->
+   <section>
+            <div class="row mx-5 ">
+                    
+        
+            <div class="col-12  py-2">
+                <h5 class="fs-3 mt-3" id="model">Image Preprocessing</h5>
+
+                <p class="fs-6">
+                    Before creating the model, we need to preprocess the images i.e, scaling, resizing, flipping and rotating the images.
+                    When we transform/preprocess the images and the orientation and form of the image change, it will help out CNN model to learn 
+                    important features in more generalized fashion from the images and will not get adapted to problems like shift invariance.
+                    Below I created 2 algorithms for preprocessing, one which removes all symbols in the reviews, another one to remove rare words which
+                    might affect our models accuraacy.
+                </p>
+                <img class='py-1' src="images/post_PCNN/shiftinvariance.jpg" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" alt="kaggle_command">
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        datagen = ImageDataGenerator(<br>
+                        &emsp;&emsp;&emsp;rescale=1./255,<br>
+                        &emsp;&emsp;&emsp;validation_split=0.2<br>
+                        &emsp;&emsp;&emsp;rotation_range=20,<br>
+                        &emsp;&emsp;&emsp;width_shift_range=0.2,<br>
+                        &emsp;&emsp;&emsp;height_shift_range=0.2,<br>
+                        &emsp;&emsp;&emsp;horizontal_flip=True,<br>
+                        )<br>
+                </code>
+                </div>
+                <ul><li>Rescaling: converting int8 to float32 images i.e., 0-255 to 0-1.0 .</li>
+                    <li>rotation_range: rotating images to limit of 20, to tackle shift invariance so that our model generalizes all data.</li>
+                    <li>shift range: shifting the image in terms of x and y axis to tackle shift invariance.</li>
+                    <li>horizontal_flip: to flip images on the y axis randomly</li>
+            </ul>
+        
+            <img class='py-1' src="images/post_PCNN/images_shift.png" style="display: block;margin-left: auto;margin-right: auto;width: 40%;" alt="kaggle_command">
+            
+            </div>
+    </div>
+
+<!-- section preprocess ends-->
+
+<!-- section Loss starts-->
+
+    <div class="row mx-5 ">
+                
+    
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3" id="loss">Building CNN Models</h5>
+            <p class="fs-6">
+                We are going to build 3 CNN models, to classify mango leafs into 8 classes.
+                <ul>
+                    <li>First, we will build a simple CNN algorithm with 9 layers</li>
+                    <li>we will add more complexity to the same CNN architecture and train</li>
+                    <li>Lastly, we will import a pre-trained model to compare our model with tranfer learning approach.</li>
+                    
+                </ul>
+                
+                The first CNN architechture is as follows:
+                <p> This is a simple CNN algorithm with input_shape=(320,240,3), with 32,64,64 and 128 filters on each convolution layer with 2 dense layers of 128 and 8 with relu and softmax respectively.
+                    This model is an example of Underfitting, while training  the model tried to learn the images and failed to learn properly since the model was
+                    not complex enough, or in other words, not enough degrees of freedom, it is not able to bend the space in finite dimensions that will be able to
+                    classify the given dataset.
+
+                </p>
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        model = tf.keras.models.Sequential() <br>
+                        model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(320,240,3)))<br>
+                        model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                        model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))<br>
+                        model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                        model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))<br>
+                        model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                        model.add(tf.keras.layers.Conv2D(128, (3, 3), activation='relu'))<br>
+                        model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                        model.add(tf.keras.layers.Flatten())<br>
+                        model.add(tf.keras.layers.Dense(64, activation='relu'))<br>
+                        model.add(tf.keras.layers.Dense(8, activation='softmax'))<br>
+                </code>
+                </div>
+
+                <img id='formula' src="/images/post_PCNN/model1_simple_architechture.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="Cross Entropy and SGD formulars">
+               
+                <div class="row m-5">
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model1_loss.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model1_acc.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                </div>
+                 
+
+                2nd CNN architechture with more layers as follows:
+
+                <p> This is a little complex CNN algorithm with an attempt to regularize the weightsd with input_shape=(320,240,3), with 32,64,128 and 256 filters on each convolution layer with 3 dense layers of 512, 256 and 8 nodes with relu and softmax respectively.
+                    This model is an example of good learning algorithm , while training  the model tries to learn the images and picks up some information without overlearning since the model was
+                    a little complex , or in other words, just enough degrees of freedom, it is able to bend the space in finite dimensions that will be able to
+                    classify the given dataset but not good enough that completly classifies all images.
+                </p>
+
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                    model = tf.keras.models.Sequential() <br>
+                    model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(320, 240, 3)))<br>
+                    model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                    model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))<br>
+                    model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                    model.add(tf.keras.layers.Conv2D(128, (3, 3), activation='relu'))<br>
+                    model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                    model.add(tf.keras.layers.Conv2D(256, (3, 3), activation='relu'))<br>
+                    model.add(tf.keras.layers.MaxPooling2D((2, 2)))<br>
+                    model.add(tf.keras.layers.Flatten())<br>
+                    model.add(tf.keras.layers.Dense(512, activation='relu'))<br>
+                    model.add(tf.keras.layers.Dropout(0.5))<br>
+                    model.add(tf.keras.layers.Dense(256, activation='relu'))<br>
+                    model.add(tf.keras.layers.Dropout(0.5))<br>
+                    model.add(tf.keras.layers.Dense(8, activation='softmax'))<br>
+                </code>
+                </div>
+
+                <img id='formula' src="/images/post_PCNN/model2_simple_architechture.png" style="display: block;margin-left: auto;margin-right: auto;width: 30%;" alt="Cross Entropy and SGD formulars">
+               
+                <div class="row m-5">
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model2_loss.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model2_acc.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                </div>
+                 
+
+                3rd CNN architechture transfer learning as follows:
+
+
+                <p> Transfer learning with VGG16, This is a very complex CNN algorithm with input_shape=(320,240,3), with many convolution layer and dense layers with output of  8 nodes with softmax.
+                    This model is an example of an Overfitting algorithm , while training the model tries to learn the images and picks up more information than needed, overlearning since the model is complex
+                     , or in other words, more degrees of freedom,to be able to bend the space in finite dimensions which will not be able to classify our dataset properly.
+
+
+
+                </p>
+
+                <div class="bg-light p-5">
+                    <code class="text-muted">
+                        from tensorflow.keras.applications import VGG16 <br>
+                        base_model = VGG16(weights='imagenet', include_top=False, input_shape=(320, 240, 3))<br>
+                        for layer in base_model.layers:<br>
+                        &emsp;&emsp;&emsp; &emsp;layer.trainable = False<br>
+                        x = tf.keras.layers.Flatten()(base_model.output)<br>
+                        x = tf.keras.layers.Dense(128, activation='relu')(x)<br>
+                        predictions = tf.keras.layers.Dense(8, activation='softmax')(x)<br>
+                        model = tf.keras.Model(inputs=base_model.input, outputs=predictions)<br>
+                        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])<br>
+                </code>
+                </div>
+
+                
+                <div class="row m-5">
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model3_loss.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                    <div class="col">
+                        <img id='formula' src="/images/post_PCNN/model3_acc.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                    </div>
+                </div>
+                 
+                
+            </p>
+          
+        </div>
+</div>
+
+<!-- section Loss ends-->
+
+
+<!-- section Training starts-->
+
+    <div class="row mx-5 ">
+        <div class="col-12  py-2">
+            <h5 class="fs-3 mt-3">Evaluation/Prediction</h5>
+
+            <p class="fs-6">
+                We use adam optimizer,categorical_crossentropy loss to train our model. the training and validation loss are as follows: 
+
+                For model 1 , the validation loss is always greater than training loss, suggesting Underfitting.
+                <img id='formula' src="/images/post_PCNN/mdoel1_stats.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                
+                For model 2 , the validation loss and the training loss are trying to converge at a point, suggesting learning of data.
+                <img id='formula' src="/images/post_PCNN/model2_stats.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                For model 3 , first the validation loss is less than training loss and then it increases and is greater than training loss, suggesting Overfitting.
+                <img id='formula' src="/images/post_PCNN/model3_stats.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" alt="Cross Entropy and SGD formulars">
+                        
+             
+                <br>
+
+                
+
+            </p>
+        
+        </div>
+</div>
+
+
+
+<!-- section Training ends-->
+
+
+
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Technical challenges</h5>
+
+        <p class="fs-6">
+            Some of the technical challenges I faced during the project:
+            <ul>
+                
+                <li>Unable to download large image files and upload, so used drive and linked collab to drive to work directly using kaggle api.</li>
+                
+            </ul>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+
+
+
+<!-- section Technical challenges starts-->
+<div class="row mx-5 ">
+                
+    
+    <div class="col-12  py-2">
+        <h5 class="fs-3 mt-3">Related links</h5>
+
+        <p class="fs-6">
+            Tutorial from the given link helped me understand more about the topic.
+           <a href="https://www.tensorflow.org/api_docs/python/tf">Tensorflow Explained</a>
+        </p>
+       
+    </div>
+</div>
+<!-- section Technical challenges end-->
+
+
+</section>
+
+</div>
+
+        
+
+
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+</html>
